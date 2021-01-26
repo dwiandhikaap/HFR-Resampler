@@ -22,6 +22,8 @@ pip install numpy
 
 ## ✨ Usage
 
+(outdated, i'll update it soon)
+
 Currently it's still so complicated to do stuff with this, but for now here's how to use it :
 1. install the dependecies
 2. clone this stuff
