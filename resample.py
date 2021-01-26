@@ -1,31 +1,26 @@
 from cv2 import cv2 as cv
+import os
 import math
 import numpy as np
 import time
 
-# Some weighting function that spits out list/array/whatever it's called in python
-def bell(n):
-    r = range(n,0,-1)
-    val = [math.exp(-(2*x/n)**2) for x in r]
-    val = val/np.sum(val)
-    return val
-
-def bell_sym(n):
-    n = int(n/2)
-    r = range(n,-n,-1)
-    val = [math.exp(-(1.5*x/n)**2) for x in r]
-    val = val/np.sum(val)
-    return val
+from Exceptions import OutputFpsNotValid
+from Weights import *
 
 #Processing the video from start to finish
-def processVideo():
+def processVideo(input_name, output_fps, blend_mode, blend_range):
     time_elapsed = time.process_time()
-    video = cv.VideoCapture("input.mp4")
+
+    video = cv.VideoCapture(input_name)
+
     input_width = video.get(cv.CAP_PROP_FRAME_WIDTH)
     input_height = video.get(cv.CAP_PROP_FRAME_HEIGHT)
+    input_fps = round(video.get(cv.CAP_PROP_FPS))
 
-    input_fps = math.ceil(video.get(cv.CAP_PROP_FPS))
-    output_fps = 60.0
+    try:
+        output_fps = round(float(output_fps))
+    except ValueError:
+        raise OutputFpsNotValid()
  
     io_fps_ratio = int(input_fps/output_fps)
 
@@ -33,9 +28,9 @@ def processVideo():
     output_nframes = int(input_nframes/io_fps_ratio)
 
     #This is what the (blended_nframes/(input_fps/output_fps)) evaluates to
-    #This will directly affect the motion blur effect
+    #This will directly affect the motion blur effect, but also greatly affect the resampling time 
     #Minimum value is 1
-    blend_range = 3
+    #blend_range = 3
 
     print("Input Resolution         : %ix%i" % (input_width,input_height))
     print("Input FPS                : %i" % input_fps)
@@ -43,16 +38,21 @@ def processVideo():
     print("Input/Output FPS Ratio   : %i" % io_fps_ratio)
     print("Input Frame Count        : %i frames" % input_nframes)
     print("Output Frame Count       : %i frames" % output_nframes)
+    print("Weighting Mode           : %s" % modeName(blend_mode))
+
+    weights = weight(blend_mode,blend_range*io_fps_ratio)
 
     imgs = []
     first_frame = True
-    for i in range(0, int(output_nframes)):
+    last_frame_n = int(output_nframes)-blend_range
+    for i in range(0, last_frame_n):
         timer1_start = time.process_time()
 
         if(first_frame):
             range1 = (i)*io_fps_ratio     
-            range2 = (i+1)*io_fps_ratio
+            range2 = (i+blend_range)*io_fps_ratio
             video.set(cv.CAP_PROP_POS_FRAMES, range1)
+            first_frame = False
 
         else:
             range1 = (i+blend_range-1)*io_fps_ratio
@@ -62,10 +62,9 @@ def processVideo():
             _, frame = video.read()
             imgs.append(frame)
 
-        final_image = blend(imgs)
+        final_image = blend(imgs,weights)
 
         del imgs[:io_fps_ratio]
-        first_frame = False
 
         cv.imwrite("output/"+str(i)+".jpg", final_image)
 
@@ -81,17 +80,44 @@ def processVideo():
         print("Elapsed Time :", time.strftime('%H:%M:%S', time.gmtime(elapsed)))
 
 #This code blends all the given frames with blending
-def blend(imgs):
-    num = len(imgs)
-    Weight = bell_sym(num) #will be customizable
-    P = np.einsum("ijkl,i->jkl", imgs, Weight)
+def blend(imgs, weights):
+    P = np.einsum("ijkl,i->jkl", imgs, weights)
     return P.astype(np.uint8)
 
 def main():
+    #todo, make a better temporary cli before implementing the gui, or don't (?) whatever
+
+    os.system('cls' if os.name == 'nt' else 'clear')
     print("HighFrameRate Video Resampling Tool v0.1 by Siveroo")
+
+    input_name = input("Enter the input file name with extension (Example: video.mp4)\n")
+    os.system('cls' if os.name == 'nt' else 'clear')
+
+
+    output_fps = input("Enter the desired video framerate (Example: 60)\n")
+    os.system('cls' if os.name == 'nt' else 'clear')
+
+    print("Input blending mode according it's numerical order!")
+    for mode in Mode:
+        print(modeName(mode))
     
+
+    blend_mode = int(input("Input : "))-1
+    os.system('cls' if os.name == 'nt' else 'clear')
+
+    print("Input the blend range! (Minimum value is 1)") 
+    print("\nInfo : The amount of blended input frames = (inputFps ÷ outputFps x blendRange).")
+    print("       What i mean by blend range is that, how many frames do you")
+    print("       want to blend into one frame, if the value is greater than 1")
+    print("       it means that it will also include frames from the future and give")
+    print("       really smooth transition between output frames")
+    print("Warning : IT GREATLY INCREASES MEMORY USAGE AND PROCESSING TIME (LINEARLY?)\n")  
+
+    blend_range = int(input("Input : "))
+    os.system('cls' if os.name == 'nt' else 'clear')    
+
     #Multiprocessing will be implemented once i understand it well enough
-    processVideo()
+    processVideo(input_name=input_name,output_fps=output_fps,blend_mode=blend_mode, blend_range=blend_range)
 
 if __name__ == "__main__":
     main()
