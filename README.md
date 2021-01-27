@@ -4,6 +4,9 @@ HFR-Resampler is a tool to resample high framerate video into lower framerate vi
 
 ![the thumbnail](https://i.ibb.co/7RN8Dh3/shit-thumbnail.png)
 
+## Example
+![the example](https://i.imgur.com/6HEa2wd.gif)
+
 ## 🔧 Installation
 
 This project requires ffmpeg, OpenCV and numpy installed. 
@@ -22,14 +25,12 @@ pip install numpy
 
 ## ✨ Usage
 
-(outdated, i'll update it soon)
-
 Currently it's still so complicated to do stuff with this, but for now here's how to use it :
-1. install the dependecies
+1. install the dependencies
 2. clone this stuff
 3. move/copy your video input to the same directory as where the ```.py``` file is
-4. make sure your video input is an ```.mp4``` format and named ```input.mp4```
-5. run ```resample.py```
+4. run ```resample.py```
+5. it will ask you every info it needs to resample, like file name, output fps, etc.
 6. if it's working, it will output the resampled frames to the ```output``` folder
 7. once it finished, you can reconstruct the video using ```ffmpeg```, you can google it if you don't know how to do it.
 8. merge audio from original video and your resampled video together, you can use ```ffmpeg```. Again, google it if you don't know how.
