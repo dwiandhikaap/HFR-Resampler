@@ -4,24 +4,8 @@ HFR-Resampler is a tool to resample high framerate video into lower framerate vi
 
 ![the thumbnail](https://i.ibb.co/7RN8Dh3/shit-thumbnail.png)
 
-## Example
+## 💚 Example
 ![the example](https://i.imgur.com/6HEa2wd.gif)
-
-## 🔧 Installation
-
-This project requires ffmpeg, OpenCV and numpy installed. 
-
-You can download ffmpeg [here](https://ffmpeg.org/download.html).
-
-You can use [pip](https://pip.pypa.io/en/stable/) to install OpenCV and numpy.
-
-```bash
-pip install opencv-python
-```
-
-```bash
-pip install numpy
-```
 
 ## ✨ Usage
 
