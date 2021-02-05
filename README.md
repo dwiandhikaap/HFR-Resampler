@@ -7,6 +7,8 @@ HFR-Resampler is a tool to resample high framerate video into lower framerate vi
 ## 💚 Example
 ![the example](https://i.imgur.com/6HEa2wd.gif)
 
+yeah i know the difference between gaussian and pyramid is subtle, but it'll become adjustable in the future
+
 ## ✨ Usage
 
 Currently it's still so complicated to do stuff with this, but for now here's how to use it :
