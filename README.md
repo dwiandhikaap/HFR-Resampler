@@ -1,6 +1,7 @@
-# HFR-Resampler
+# HFR-Resampler (discontinued)
 
 HFR-Resampler is a tool to resample high framerate video into lower framerate video with customizable weighting.
+(i have another project to work on, this project is discontinued indefinitely)
 
 ![the thumbnail](https://i.ibb.co/7RN8Dh3/shit-thumbnail.png)
 
