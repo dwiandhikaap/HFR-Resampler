@@ -8,22 +8,27 @@ class Mode(IntEnum):
     GAUSS_SYM       = 2
     PYRAMID         = 3
     PYRAMID_SYM     = 4
-    QUARTER_CIRCLE  = 5
-    SEMI_CIRCLE     = 6
+    SIVEROO_1       = 5
+    SIVEROO_2       = 6
+
+#This function will return an list of value, like below:
+# [0,1,2,3,...,n] -> [a,...,b]
+def scaleRange(n,a,b):
+    return [(x*(b-a)/(n-1))+a for x in range(0,n)]
 
 def equal(n):
     return [1/n]*n
 
 def gauss(n):
     r = range(n,0,-1)
-    val = [math.exp(-(1.5*x/n)**2) for x in r]
+    val = [math.exp(-(2.0*x/n)**2) for x in r]
     val = val/np.sum(val)
     return val
 
 def gauss_sym(n):
     n = n/2
     r = range(int(n),-math.ceil(n),-1)
-    val = ([math.exp(-(1.5*x/(n))**2) for x in r])
+    val = ([math.exp(-(2.0*x/(n))**2) for x in r])
     val = val/np.sum(val)
     return val
 
@@ -39,15 +44,26 @@ def pyramid_sym(n):
     val = val/np.sum(val)
     return val
 
-def quarter_circle(n):
-    r = reversed(range(n))
-    val = [math.sqrt(1-(x/(n))**2) for x in r]
+def siveroo1(n):
+    r = scaleRange(n,-3,0.1)
+    val = [math.floor(3*math.exp(-(x/1.9)**2))/3+0.1 for x in r]
     val = val/np.sum(val)
     return val
 
-def semi_circle(n):
-    #val = [1-((x-((n-1)/2))/(n-1))**2 for x in range(n)]
-    val = [math.sqrt(1-((n-2*x-1)/(2*(n-1)))**2) for x in range(n)]
+#divide equally and weight individual part equally
+#lets say, 1,3,2
+def divide(n,w):
+    #weight array/list
+    #w = [1,3,2]
+
+    #rescale n
+    r = scaleRange(n,0,len(w)-0.1)
+
+    val = []
+    idx = [math.floor(x) for x in r]
+    for x in range(0,n):
+        index = int(idx[x])
+        val.append(w[index])
     val = val/np.sum(val)
     return val
 
@@ -64,8 +80,8 @@ def weight(mode,count):
             Mode.GAUSS_SYM      : gauss_sym(count),
             Mode.PYRAMID        : pyramid(count),
             Mode.PYRAMID_SYM    : pyramid_sym(count),
-            Mode.QUARTER_CIRCLE : quarter_circle(count),
-            Mode.SEMI_CIRCLE    : semi_circle(count)
+            Mode.SIVEROO_1      : siveroo1(count),
+            Mode.SIVEROO_2      : divide(count,[1,3,3,2,2])
         }[mode]
 
 def modeName(mode):
@@ -75,6 +91,6 @@ def modeName(mode):
             Mode.GAUSS_SYM      : "[3] Gaussian Symmetric",
             Mode.PYRAMID        : "[4] Pyramid Asymmetric",
             Mode.PYRAMID_SYM    : "[5] Pyramid Symmetric",
-            Mode.QUARTER_CIRCLE : "[6] Quarter-Circle",
-            Mode.SEMI_CIRCLE    : "[7] Semi-Circle"
+            Mode.SIVEROO_1      : "[6] Siveroo's Preset I",
+            Mode.SIVEROO_2      : "[7] Siveroo's Preset II"
         }[mode]
