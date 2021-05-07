@@ -30,7 +30,7 @@ You can use this program by running resampler.exe via terminal or cmd. Then, you
  - `-fps FPS` : Specify the framerate of the output video
  - `-r BLEND_RANGE` : Specify the Blend Range of the resampling process.
    It's the number you get from resampled **frame count** divided by
-   **fps ratio of the input and output video**. Usually it's around 1.0 to 2.0
+   **fps ratio of the input and output video**. Normal resampling is 1.0, but you can use 1.5, 2.0, or more, to resample more frames.
  - `-m BLEND_MODE` : Specify which blending mode to use. More details
    later below.
  - `-res WIDTHxHEIGHT` : Specify the resolution of the output video. Use
