@@ -1,0 +1,8 @@
+{
+    "framerate": 60, 
+    "resolution": "UNCHANGED", 
+    "fourcc": "FFV1", 
+    "cv_colourfix": false,
+    "blend_range": 1.0, 
+    "blend_mode": 5 
+}

@@ -3,13 +3,14 @@ import numpy as np
 from enum import IntEnum
 
 class Mode(IntEnum):
-    EQUAL           = 0
-    GAUSS           = 1
-    GAUSS_SYM       = 2
-    PYRAMID         = 3
-    PYRAMID_SYM     = 4
-    SIVEROO_1       = 5
-    SIVEROO_2       = 6
+    CUSTOM          = 0
+    EQUAL           = 1
+    GAUSS           = 2
+    GAUSS_SYM       = 3
+    PYRAMID         = 4
+    PYRAMID_SYM     = 5
+    SIVEROO_1       = 6
+    SIVEROO_2       = 7
 
 #This function will return an list of value, like below:
 # [0,1,2,3,...,n] -> [a,...,b]
@@ -50,13 +51,10 @@ def siveroo1(n):
     val = val/np.sum(val)
     return val
 
-#divide equally and weight individual part equally
-#lets say, 1,3,2
-def divide(n,w):
-    #weight array/list
-    #w = [1,3,2]
-
-    #rescale n
+# this function will stretch the given array (w) to a specific length (n)
+# example : n = 10, w = [1,2]
+# result : val = [1,1,1,1,1,2,2,2,2,2] , flip it, and then normalize it so its sum is equal to 1
+def stretch(n,w):
     r = scaleRange(n,0,len(w)-0.1)
 
     val = []
@@ -81,7 +79,7 @@ def weight(mode,count):
             Mode.PYRAMID        : pyramid(count),
             Mode.PYRAMID_SYM    : pyramid_sym(count),
             Mode.SIVEROO_1      : siveroo1(count),
-            Mode.SIVEROO_2      : divide(count,[1,3,3,2,2])
+            Mode.SIVEROO_2      : stretch(count,[1,3,3,2,2])
         }[mode]
 
 def modeName(mode):
