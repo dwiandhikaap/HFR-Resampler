@@ -62,4 +62,4 @@ You should use video file format / video container that supports the codec you a
 Will use "input.mp4" as input, and will output "input_resampled.mkv" on 1920x1080 resolution on 60 FPS. Which used my own Weighting Preset as the Weighting Method, and resampled on 2.0 blend range. 
 
 ## License
-[MIT](https://choosealicense.com/licenses/mit/)
+[![MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
