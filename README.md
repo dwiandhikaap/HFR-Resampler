@@ -13,6 +13,9 @@ yeah i know the difference between gaussian and pyramid is subtle, but it'll bec
 3. Copy the video into the same folder
 4. Open your Command Line/Terminal on that directory, and then type `resampler.exe -h` to show the help, see more detailed explanation below.
 
+**Video Tutorial**  
+https://www.youtube.com/watch?v=fdra2CnEl1A
+
 ## Usage
 You can use this program by running resampler.exe via terminal or cmd. Then, you can use the available arguments to customize the resampling process.
 
