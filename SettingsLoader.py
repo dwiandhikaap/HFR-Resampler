@@ -1,7 +1,7 @@
 import argparse
 import json
 
-def load():
+def loadSettings():
     settingsJson = None
     with open("settings.json") as settings:
         settingsJson = json.load(settings)
@@ -20,12 +20,12 @@ def load():
                              help="""Framerate/FPS of the output file.\
                                 \nExample : -fps 60""")
 
-    args_parser.add_argument("-m", "--blend_mode", type=int, default=settingsJson["blend_mode"],
-                             help="""Weighting mode.\
-                                \nTODO : add more explanation on this""")
+    args_parser.add_argument("-m", "--blend_mode", type=str, default=settingsJson["blend_mode"],
+                             help="""Choose blending mode. (Check the GitHub readme for more info)\
+                                \nExample : -m GAUSSIAN_SYM, -m EQUAL""")
 
     args_parser.add_argument("-r", "--blend_range", type=float, default=settingsJson["blend_range"],
-                             help="""Range or Blend Range is the number that you get from how many frames resampled divided by the ratio between input and output fps.\
+                             help="""Range or Blend Range is the number that you get from calculating how many frames are resampled divided by the ratio between input and output fps.\
                                 \nTips : Use value between 1.0 - 2.0, above 3.5 will cause blurry effect. This will also impact resampling performance""")
 
     args_parser.add_argument("-res", "--resolution", type=str, default=settingsJson["resolution"],
@@ -37,10 +37,10 @@ def load():
                                 \nExample : -fourcc MJPG""")
 
     args_parser.add_argument("-cvfix", "--cv_colourfix", action='store_true', default=settingsJson["cv_colourfix"],
-                             help="""Enable this if you're resampling video produced by osr2mp4 or anything that uses default OpenCV video writer codec\
+                             help="""Enable this if you're resampling video produced by osr2mp4.\
                                 \nExample : -cvfix""") 
 
-    args_parser.add_argument('--version', action='version', version='HFR-Resampler v0.3')
+    args_parser.add_argument('--version', action='version', version='HFR-Resampler v0.4')
                      
 
     parsed_args = args_parser.parse_args()

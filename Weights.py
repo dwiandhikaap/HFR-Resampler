@@ -1,94 +1,88 @@
 import math
 import numpy as np
-from enum import IntEnum
+import json
 
-class Mode(IntEnum):
-    CUSTOM          = 0
-    EQUAL           = 1
-    GAUSS           = 2
-    GAUSS_SYM       = 3
-    PYRAMID         = 4
-    PYRAMID_SYM     = 5
-    SIVEROO_1       = 6
-    SIVEROO_2       = 7
+from Exceptions import *
 
-#This function will return an list of value, like below:
+settingsJson = None
+with open("settings.json") as settings:
+    settingsJson = json.load(settings)["blend_settings"]
+
+# This function will return an list of value, like below:
 # [0,1,2,3,...,n] -> [a,...,b]
 def scaleRange(n,a,b):
     return [(x*(b-a)/(n-1))+a for x in range(0,n)]
-
+    
 def equal(n):
     return [1/n]*n
 
-def gauss(n):
-    r = range(n,0,-1)
-    val = [math.exp(-(2.0*x/n)**2) for x in r]
+def gauss(n, c, bound):
+    r = scaleRange(n, bound[0], bound[1])
+    val = [math.exp(-((x)**2)/(2*(c**2))) for x in r]
     val = val/np.sum(val)
     return val
 
-def gauss_sym(n):
-    n = n/2
-    r = range(int(n),-math.ceil(n),-1)
-    val = ([math.exp(-(2.0*x/(n))**2) for x in r])
+def gauss_sym(n, c, bound):
+    r = scaleRange(n, -np.amax(np.abs(bound)), np.amax(np.abs(bound)))
+    val = [math.exp(-((x)**2)/(2*(c**2))) for x in r]
     val = val/np.sum(val)
     return val
 
-def pyramid(n):
-    r = range(1,n+1)
-    val = [x/n for x in r]
+def pyramid(n, reverse):
+    val = []
+    if reverse:
+        val = [x for x in range(n,0,-1)]
+    else:
+        val = [x for x in range(1,n+1)]
     val = val/np.sum(val)
     return val
 
 def pyramid_sym(n):
     r = range(0,n)
-    val = [(n/2)-abs(x-(n-1)/2) for x in r]
+    val = [((n-1)/2-abs(x-((n-1)/2))+1) for x in r]
     val = val/np.sum(val)
     return val
 
-def siveroo1(n):
-    r = scaleRange(n,-3,0.1)
-    val = [math.floor(3*math.exp(-(x/1.9)**2))/3+0.1 for x in r]
+def funcEval(func,nums):
+        try:
+            return eval(f"[({func}) for x in nums]")
+        except NameError as e:
+            raise InvalidCustomWeighting
+
+def custom(n, func="", bound=(0,1)):
+    r = scaleRange(n, bound[0], bound[1])
+    val = funcEval(func, r)
+    if np.amin(val) < 0: val -= np.amin(val)
     val = val/np.sum(val)
     return val
 
-# this function will stretch the given array (w) to a specific length (n)
-# example : n = 10, w = [1,2]
-# result : val = [1,1,1,1,1,2,2,2,2,2] , flip it, and then normalize it so its sum is equal to 1
-def stretch(n,w):
-    r = scaleRange(n,0,len(w)-0.1)
-
+# This function will stretch the given array (weights) to a specific length (n)
+# Example : n = 10, weights = [1,2]
+# Result : val = [1,1,1,1,1,2,2,2,2,2], then normalize it to [0.0667, 0.0667, 0.0667, 0.0667, 0.0667, 0.1333, 0.1333, 0.1333, 0.1333, 0.1333]
+def divide(n,weights):
+    r = scaleRange(n,0,len(weights)-0.1)
     val = []
     idx = [math.floor(x) for x in r]
     for x in range(0,n):
         index = int(idx[x])
-        val.append(w[index])
-    val = val/np.sum(val)
+        val.append(weights[index])
+    if np.amin(val) < 0: val -= np.amin(val)
+    val = (val/np.sum(val))
     return val
-
-def null(n):
-    return [0]*n
 
 def weight(mode,count):
     if count == 1:
-        return [1.0]
+        return [1.0] # If only one frame is weighted, it's weight is always going to be 1.
     else:
-        return {
-            Mode.EQUAL          : equal(count),
-            Mode.GAUSS          : gauss(count),
-            Mode.GAUSS_SYM      : gauss_sym(count),
-            Mode.PYRAMID        : pyramid(count),
-            Mode.PYRAMID_SYM    : pyramid_sym(count),
-            Mode.SIVEROO_1      : siveroo1(count),
-            Mode.SIVEROO_2      : stretch(count,[1,3,3,2,2])
-        }[mode]
-
-def modeName(mode):
-    return {
-            Mode.EQUAL          : "[1] Equal",
-            Mode.GAUSS          : "[2] Gaussian Asymmetric",
-            Mode.GAUSS_SYM      : "[3] Gaussian Symmetric",
-            Mode.PYRAMID        : "[4] Pyramid Asymmetric",
-            Mode.PYRAMID_SYM    : "[5] Pyramid Symmetric",
-            Mode.SIVEROO_1      : "[6] Siveroo's Preset I",
-            Mode.SIVEROO_2      : "[7] Siveroo's Preset II"
-        }[mode]
+        try:
+            return {
+                "EQUAL"          : equal(count),
+                "GAUSSIAN"       : gauss(count, c=settingsJson['gaussian']['standard_deviation'], bound=settingsJson['gaussian']['bound']),
+                "GAUSSIAN_SYM"   : gauss_sym(count, c=settingsJson['gaussian']['standard_deviation'], bound=settingsJson['gaussian']['bound']), 
+                "PYRAMID"        : pyramid(count, reverse=settingsJson['pyramid']['reverse']),
+                "PYRAMID_SYM"    : pyramid_sym(count),
+                "CUSTOM_FUNCTION": custom(count, func=settingsJson['custom_function']['function'], bound=settingsJson['custom_function']['bound']),
+                "CUSTOM_WEIGHT"  : divide(count, weights=settingsJson['custom_weight']['weight'])
+            }[mode.upper()]
+        except KeyError:
+            raise InvalidBlendMode

@@ -6,7 +6,7 @@ import ntpath
 
 from cv2 import cv2 as cv
 
-from SettingsLoader import *
+from SettingsLoader import loadSettings
 from Exceptions import *
 from Weights import *
 
@@ -94,7 +94,7 @@ def processVideo(settings):
     imgs = []
     input_video.set(cv.CAP_PROP_POS_FRAMES, 0)
 
-    # FIRST ITERATION, LOAD ALL FRAMES
+    # First iteration, load all frames needed
     for _ in range(0, blended_nframes):
         _, frame = input_video.read()
         if needResize:
@@ -104,7 +104,7 @@ def processVideo(settings):
     output_video.write(blend(np.asarray(imgs), weights))
     del imgs[:fps_ratio]
 
-    # NEXT ITERATION, ONLY LOAD THE REMAINING UNLOADED FRAMES
+    # Next iteration, load remaining unloaded frames
     for i in range(1, int(output_nframes)):
         timer_start = time.process_time()
         for _ in range(0, fps_ratio):
@@ -137,9 +137,8 @@ def processVideo(settings):
         os.rename(f"to-fix_{input_name}", f"{input_name}")
         
 def main():
-    settings = load()
-    print(settings)
-
+    settings = loadSettings()
+    
     processVideo(settings)
 
 if __name__ == "__main__":
