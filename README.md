@@ -43,16 +43,17 @@ You can use this program by running resampler.exe via terminal or cmd. Then, you
  - `-cvfix` : Enable colorfix ffmpeg script to fix the weird colorspace of the input video writen by OpenCV video writer.
 
 <b>Blend Mode</b>  
-Currently, the blend modes are still has to be specified by integers writen below.
+Blend Mode can be specified using keywords below. (*case-insensitive*)
 
- - Custom : 0 (***has not been implemented yet***)
- - Equal : 1
- - Gaussian : 2
- - Gaussian Symmetric : 3
- - Pyramid : 4
- - Pyramid Symmetric : 5
- - Siveroo's Preset : 6 (***will be replaced by custom weighting***)
- - Siveroo's Preset II : 7 (***will be replaced by custom weighting***)
+- *EQUAL*
+- *GAUSSIAN*
+- *GAUSSIAN_SYM*
+- *PYRAMID*
+- *PYRAMID_SYM*
+- *CUSTOM_FUNCTION*
+- *CUSTOM_WEIGHT*
+
+Example : `-m equal` , `-m custom_WeIghT`
 
 **Output Filename Format**  
 You should use video file format / video container that supports the codec you are using for the resampling process. For example, if you use FFV1 codec, you may want to use `.mkv` file format.
