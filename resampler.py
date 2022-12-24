@@ -4,7 +4,7 @@ import subprocess
 import os
 import ntpath
 
-from cv2 import cv2 as cv
+import cv2 as cv
 
 from SettingsLoader import loadSettings
 from Exceptions import *
@@ -22,11 +22,11 @@ def blend(imgs, weights):
 def colourFix(input_name):
     filename = ntpath.basename(input_name)
     os.rename(f"{input_name}", f"to-fix_{filename}")
-    command = f"ffmpeg -i to-fix_{input_name} -vcodec libx264 -preset ultrafast -crf 1 -vf colormatrix=bt601:bt709,eq=gamma_g=0.97 -c:a copy {input_name}"
+    command = f'ffmpeg -i "to-fix_{input_name}" -vcodec libx264 -preset ultrafast -crf 1 -vf colormatrix=bt601:bt709,eq=gamma_g=0.97 -c:a copy "{input_name}"'
     subprocess.call(command, shell=True)
 
 def addAudio(input_name, output_name):
-    command = f"ffmpeg -i no-audio_{output_name} -i {input_name} -map 0:v -map 1:a -c copy {output_name}"
+    command = f'ffmpeg -i "no-audio_{output_name}" -i "{input_name}" -map 0:v -map 1:a -c copy "{output_name}"'
     subprocess.call(command, shell=True)
     os.remove(f"no-audio_{output_name}")
 
@@ -73,6 +73,10 @@ def processVideo(settings):
     input_fps = round(input_video.get(cv.CAP_PROP_FPS))
     output_fps = int(output_fps)
     fps_ratio = int(input_fps/output_fps)
+
+    if fps_ratio < 1:
+        raise Exception("ERROR - Output FPS is higher than input FPS, try lowering the output FPS using '-fps' argument")
+
     input_nframes = input_video.get(cv.CAP_PROP_FRAME_COUNT)
     output_nframes = int(input_nframes/fps_ratio)
     fourcc_code = settings["fourcc"]
