@@ -77,8 +77,8 @@ def processVideo(settings):
     if fps_ratio < 1:
         raise Exception("ERROR - Output FPS is higher than input FPS, try lowering the output FPS using '-fps' argument")
 
-    if output_fps % input_fps != 0:
-        print("WARNING - Output FPS is not a multiple of input FPS, this may cause issues with the output video")
+    if input_fps % output_fps != 0:
+        print("WARNING - Input FPS is not divisible by output FPS, this may cause the output video to be out of sync with the audio")
         print("Would you like to continue? (y/n)")
         choice = input()
         if choice != "y":
